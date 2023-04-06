@@ -1,6 +1,6 @@
 # KnowWalk
 
-Knowalk is an algorithm that produces embeddings out of a knowledge graph. The knowledge graph has to be fed to the algorithm in a .csv format and with specific headers i.e. 
+Knowalk is an algorithm that produces embeddings out of a knowledge graph. The knowledge graph has to be fed to the algorithm in a .csv format without index  and with specific headers i.e. 
 
 - source: id of the source
 - target: id of the target
