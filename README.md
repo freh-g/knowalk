@@ -8,7 +8,7 @@ Knowalk is an algorithm that produces embeddings out of a knowledge graph. The k
 - source_type: type of the source
 - target_type: type of the target
 
-An example i given in kg_edgelist.csv file. In this knowledge graph we have ~60 types of relationship and 4 node types (functions, phenotypes, drugs, proteins).
+As an example is available in data/kg_edgelist.csv. This knowledge graph is composed of 41k nodes of 4 types (functions, phenotype, drug and protein) and ~60 types of relationships.
 
 KnoWalk need several dependencies, an environment named KnoWalk can be created by running
 
