@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from K2V_Walkers import KRW
 import pandas as pd
 import pickle

@@ -71,6 +71,7 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
                     if verbose == 'True':
                         print('restarting')
                     Pointer=Node
+                    n+=1
                     if verbose == 'True':
                         print(f'I restarted so now the starting point is {Pointer}')
                 else:
