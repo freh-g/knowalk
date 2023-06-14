@@ -21,7 +21,7 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
             if directed == 'True':
                 PossiblePaths=[ed for ed in Graph.out_edges(Pointer,data=True)]
             else:
-                PossiblePaths=[ed for ed in Graph.out_edges(Pointer,data=True)] + [(b,c,a) for (a,b,c) in Graph.in_edges(Pointer,data=True)]
+                PossiblePaths=[ed for ed in Graph.out_edges(Pointer,data=True)] + [(b,a,c) for (a,b,c) in Graph.in_edges(Pointer,data=True)]
                 
             PossiblePathsNodes=[ed[1] for ed in PossiblePaths]
             
@@ -51,8 +51,12 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
                 else:
                     if verbose == 'True':
                         print(f'No prioritization since the current node is {TypeOfNode}')
-                    NOfNeighbors=len(Graph.out_edges(Pointer))
-                    Weights=[1 for _ in range(NOfNeighbors)]
+                    if directed=='True':    
+                        NOfNeighbors=len(Graph.out_edges(Pointer))
+                        Weights=[1 for _ in range(NOfNeighbors)]
+                    else:
+                        NOfNeighbors=len(Graph.out_edges(Pointer)) + len(Graph.in_edges(Pointer))
+                        Weights=[1 for _ in range(NOfNeighbors)]
 
                 path=random.choices(PossiblePaths,Weights)
                 Edge=path[0][2][EdgeAttributeName]
