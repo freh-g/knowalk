@@ -13,7 +13,7 @@ import random
 
 parser=argparse.ArgumentParser(description='Creates embeddings out of a Knowledge graph')
 parser.add_argument('-e','--edgelist',help = """path of the edgelist, it have to be in csv format, columns names have to be [source, target, relation_type, source_type, target_type] and having no index""",type = str)
-parser.add_argument('-w','--weights',help = """user specific weights to be assigned to the walker, they have to be assigned in dictionary form ex: "{('drug','protein'): 0,('protein','function'): 10,('function','phenotype'):100}" """,type = str)
+parser.add_argument('-w','--weights',help = """user specific weights to be assigned to the walker, they have to be assigned in dictionary form ex: "{('drug','protein'): 0,('protein','function'): 10,('function','phenotype'):100}" """,type = str, default = "{}")
 parser.add_argument('-i','--iterations',help = "how many walks every node",type = int, default = 3)
 parser.add_argument('-l','--length',help = 'length of the walks',type = int, default = 50)
 parser.add_argument('-r','--restart', help = 'restart from the beginning to complete the walk if no outedges are present',type = str, default = 'True')
