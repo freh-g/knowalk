@@ -23,6 +23,8 @@ parser.add_argument('-s','--save',help = "if true save the walks in KNWalks.txt"
 parser.add_argument('-o','--output',help = "output file in which to store the embeddings, it will be a pickled python dictionary",type = str)
 parser.add_argument('-d','--directed',help = "if True considers only out edges of a node as possible path else all neighbors are considered ",type = str, default = 'True')
 parser.add_argument('-c','--min_word_count',help = "The minimum occurrence of words used from W2V to create the embeddings",type = int, default = 5)
+
+parser.add_argument('--workers',help = "number of cores to use with word2vec default is -1 that means all cores" ,type = int, default = -1)
 parser.add_argument('--window',help = "window for Word2Vec training, it will predict words in a window of this size",type = int, default = 5)
 parser.add_argument('--skipgram',help = "if using skipgram model",type = int, default = 1)
 parser.add_argument('--hs',help = "if 1 will use hierarchical softmax if 0 negative sampling will be used ",type = int, default = 0)
@@ -107,7 +109,7 @@ def Main():
     print('PRODUCING THE EMBEDDINGS')
     model = Word2Vec(window = args.window, sg = args.skipgram, hs = args.hs,
                  negative = args.negatives, # for negative sampling
-                alpha=args.alpha,vector_size = args.vector_size,min_count = args.min_word_count)
+                alpha=args.alpha,vector_size = args.vector_size,min_count = args.min_word_count,workers = args.workers)
 
     Id2Vec = ProduceEmbeddings(model,walks)            
     

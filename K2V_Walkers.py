@@ -10,7 +10,10 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
     - EdgeAttributeName is a string with the name in which is stored the edge type"""
     RandomWalks=[]
     for iteration in range(Iterations):
-        Pointer=Node   
+        Pointer=Node
+        out_edges = Graph.out_edges(Pointer,data=True)
+        in_edges = Graph.in_edges(Pointer,data=True)
+        type_of_prioritization = DictOfProb.keys()   
         if verbose == 'True':
             print(f'\n Starting at {iteration} starting node is: {Pointer}')
             
@@ -19,9 +22,9 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
         n = 0 
         while n < Depth:
             if directed == 'True':
-                PossiblePaths=[ed for ed in Graph.out_edges(Pointer,data=True)]
+                PossiblePaths=[ed for ed in out_edges]
             else:
-                PossiblePaths=[ed for ed in Graph.out_edges(Pointer,data=True)] + [(b,a,c) for (a,b,c) in Graph.in_edges(Pointer,data=True)]
+                PossiblePaths=[ed for ed in out_edges] + [(b,a,c) for (a,b,c) in in_edges]
                 
             PossiblePathsNodes=[ed[1] for ed in PossiblePaths]
             
@@ -34,8 +37,8 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
                 TypeOfNode=Graph.nodes[Pointer][NodeAttributeName]
                 if verbose == 'True':
                     print('currently on node:',Pointer,TypeOfNode)
-                if TypeOfNode in [e[0] for e in DictOfProb.keys()]:
-                    TypeOfNodeToPrioritize=list(DictOfProb)[[e[0] for e in DictOfProb.keys()].index(TypeOfNode)][1]
+                if TypeOfNode in [e[0] for e in type_of_prioritization]:
+                    TypeOfNodeToPrioritize=list(DictOfProb)[[e[0] for e in type_of_prioritization].index(TypeOfNode)][1]
                     if verbose == 'True':
                         print(f'there are node to prioritize: {TypeOfNodeToPrioritize}')
                     TypesOfNeighbors=[Graph.nodes[n][NodeAttributeName] for n in PossiblePathsNodes]
@@ -43,7 +46,7 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
                     Neighbors=Counter(TypesOfNeighbors)
                     if verbose == 'True':
                         print('I have these type of Neighbors so see if weights are calculated in an appropriated way', Neighbors)
-                    Weight=list(DictOfProb.values())[[e[0] for e in DictOfProb.keys()].index(TypeOfNode)]
+                    Weight=list(DictOfProb.values())[[e[0] for e in type_of_prioritization].index(TypeOfNode)]
                     NumberOfEdgesOfInterest=Neighbors[TypeOfNodeToPrioritize]
                     Weights=[1+Weight/NumberOfEdgesOfInterest if Type == TypeOfNodeToPrioritize else 1 for Type in TypesOfNeighbors ]
                     if verbose == 'True':
@@ -52,10 +55,10 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
                     if verbose == 'True':
                         print(f'No prioritization since the current node is {TypeOfNode}')
                     if directed=='True':    
-                        NOfNeighbors=len(Graph.out_edges(Pointer))
+                        NOfNeighbors=len(out_edges)
                         Weights=[1 for _ in range(NOfNeighbors)]
                     else:
-                        NOfNeighbors=len(Graph.out_edges(Pointer)) + len(Graph.in_edges(Pointer))
+                        NOfNeighbors=len(out_edges) + len(in_edges)
                         Weights=[1 for _ in range(NOfNeighbors)]
 
                 path=random.choices(PossiblePaths,Weights)
