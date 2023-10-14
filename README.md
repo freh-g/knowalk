@@ -1,6 +1,6 @@
 # KnoWalk
 
-Knowalk is an algorithm that produces embeddings out of a knowledge graph. The knowledge graph has to be fed to the algorithm in a .csv format without index  and with specific headers i.e. 
+KnoWalk is an algorithm that produces nodes embeddings from a knowledge graph. It is optimized for running in parallel on multiple CPUs, by default n of available CPUs - 1. KnoWalk takes as input a knowledge graph that has to be fed to the algorithm in a .csv format without index  and with specific headers i.e. 
 
 - source: id of the source
 - target: id of the target
