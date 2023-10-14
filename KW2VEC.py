@@ -86,10 +86,10 @@ def ProduceEmbeddings(model,random_walks,epochs = args.epochs):
 
 def Main():
     edgelist = LoadEdges()
-    print('CREATING KG')
+    print('|=====> CREATING KG')
     kg = CreateNetworkFromEdgelist(edgelist)
     
-    print(f'KG CREATED, NUMBER OF NODES:{kg.number_of_nodes()} NUMBER OF EDGES:{kg.number_of_edges()}')
+    print(f'|=====> KG CREATED, NUMBER OF NODES:{kg.number_of_nodes()} NUMBER OF EDGES:{kg.number_of_edges()}')
     
     print('|=====> START WALKING')
     
