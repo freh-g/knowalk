@@ -107,7 +107,8 @@ def Main():
     print(f'\n\n\t\t\t|=====> KG CREATED, NUMBER OF NODES:{kg.number_of_nodes()} NUMBER OF EDGES:{kg.number_of_edges()} <=====|')
     
     print('\n\n\t\t\t|=====> START WALKING <=====|')
-    
+    all_nodes = list(kg.nodes)
+    all_nodes = chunk_into_n(all_nodes,nofcores)
     processes = []
     walks = []
     q = Queue()
