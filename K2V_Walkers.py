@@ -14,7 +14,7 @@ def KRW(Node,Graph,NodeAttributeName,EdgeAttributeName,DictOfProb,Iterations=5,D
         out_edges = Graph.out_edges(Pointer,data=True)
         in_edges = Graph.in_edges(Pointer,data=True)
         nodes = Graph.nodes
-		type_of_prioritization = DictOfProb.keys()   
+        type_of_prioritization = DictOfProb.keys()   
         if verbose == 'True':
             print(f'\n Starting at {iteration} starting node is: {Pointer}')
             
