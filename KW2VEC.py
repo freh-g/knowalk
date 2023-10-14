@@ -7,8 +7,8 @@ from tqdm import tqdm
 import argparse
 from gensim.models import Word2Vec
 import ast
-import random
-import multiprocessing
+from multiprocessing import cpu_count, Process, Queue
+from math import ceil
 
 
 
@@ -55,10 +55,14 @@ def CreateNetworkFromEdgelist(edgelist):
     
     return kg
 
-def MakeWalks(kg,probabilities):
-    all_nodes=list(kg.nodes)
+def chunk_into_n(lst, n):
+    size = ceil(len(lst) / n)
+    res = list(map(lambda x: lst[x * size:x * size + size],list(range(n))))
+    return res
+
+def MakeWalks(nodes,kg,q,p,probabilities= ast.literal_eval(args.weights)):
     random_walks = []
-    for n in tqdm(all_nodes):
+    for n in tqdm(nodes,position=p):
         biorw=KRW(n,kg,Iterations=args.iterations,
                  Depth=args.length,
                  NodeAttributeName='type',
@@ -70,7 +74,7 @@ def MakeWalks(kg,probabilities):
                  directed = args.directed)
         random_walks.extend(biorw)
     
-    return random_walks
+    q.put(random_walks)
 
 
 def ProduceEmbeddings(model,random_walks,epochs = args.epochs):
@@ -85,19 +89,45 @@ def ProduceEmbeddings(model,random_walks,epochs = args.epochs):
 
 
 def Main():
+    
+    if args.workers:
+        nofcores=args.workers
+    else:
+        nofcores = cpu_count() - 1 
+    
+    print(f'\n\n\t\t\t|=====> USING {nofcores} CPUs <=====|')
+    
+    
+    print('\n\n\t\t\t|=====> CREATING KG <=====|')
+    
     edgelist = LoadEdges()
-    print('|=====> CREATING KG')
+    
     kg = CreateNetworkFromEdgelist(edgelist)
     
-    print(f'|=====> KG CREATED, NUMBER OF NODES:{kg.number_of_nodes()} NUMBER OF EDGES:{kg.number_of_edges()}')
+    print(f'\n\n\t\t\t|=====> KG CREATED, NUMBER OF NODES:{kg.number_of_nodes()} NUMBER OF EDGES:{kg.number_of_edges()} <=====|')
     
-    print('|=====> START WALKING')
+    print('\n\n\t\t\t|=====> START WALKING <=====|')
     
-    probabilities = ast.literal_eval(args.weights)
+    processes = []
+    walks = []
+    q = Queue()
     
-    walks = MakeWalks(kg,probabilities)
+    for i,chunk in enumerate(all_nodes):
+        p = Process(target = MakeWalks,args=(chunk,kg,q,i,))
+        p.start()
+        processes.append(p)
     
-    print(f"|=====> {len(walks)} WALKS HAVE BEEN PRODUCED")
+    for p in processes:
+        walk = q.get() # will block
+        walks.append(walk)
+    
+    for p in processes:
+        p.join()  
+     
+    
+    walks = list(sum(walks,[]))
+   
+    print(f"\n\n\t\t\t|=====> {len(walks)} WALKS HAVE BEEN PRODUCED  <=====|")
     
     if args.save:
         with open('KNWalks.txt','w') as f:
@@ -106,18 +136,15 @@ def Main():
                 for word in walk:
                     f.write(word + ' ')
                 f.write('\n')
-    if args.workers:
-        nofcores=args.workers
-    else:
-        nofcores = multiprocessing.cpu_count() - 1 
-    print(f'|=====> PRODUCING THE EMBEDDINGS \n {nofcores} cores will be used')
+ 
+    print('\n\n\t\t\t|=====> PRODUCING THE EMBEDDINGS <=====|')
     model = Word2Vec(window = args.window, sg = args.skipgram, hs = args.hs,
                  negative = args.negatives, # for negative sampling
                 alpha=args.alpha,vector_size = args.vector_size,min_count = args.min_word_count,workers = nofcores)
 
     Id2Vec = ProduceEmbeddings(model,walks)            
     
-    print('|=====> SAVING THE EMBEDDINGS')
+    print('\n\n\t\t\t|=====> SAVING THE EMBEDDINGS <=====|')
     
     with open(args.output,'wb') as f:
         pickle.dump(Id2Vec,f)
